@@ -1,0 +1,62 @@
+{
+  "name": "test-api-express-mongo",
+  "version": "1.0.2",
+  "description": "Définir des tests d'api de manière déclarative",
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "cross-env NODE_ENV=test mocha --recursive --require babel-register --exit \"test/**/*.js\"",
+    "build": "rimraf dist && babel src -d dist",
+    "prepublishOnly": "npm version patch && npm run build",
+    "npmpublish": "npm publish"
+  },
+  "author": "Slimane Médini",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "4.1.2",
+    "chai-http": "4.0.0",
+    "fs-readdir-recursive": "1.1.0",
+    "jsonpath": "1.0.0",
+    "lodash": "4.17.10",
+    "mongo-connexion": "1.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.0",
+    "babel-plugin-transform-builtin-extend": "1.1.2",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-polyfill": "6.26.0",
+    "babel-preset-env": "1.6.1",
+    "babel-preset-stage-3": "6.24.1",
+    "babel-register": "6.26.0",
+    "cross-env": "5.2.0",
+    "mocha": "5.2.0",
+    "mongodb": "2.2.36",
+    "rimraf": "2.6.2"
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "stage-3"
+    ],
+    "plugins": [
+      "transform-runtime",
+      [
+        "transform-builtin-extend",
+        {
+          "globals": [
+            "Error",
+            "Array"
+          ]
+        }
+      ]
+    ],
+    "env": {
+      "test": {
+        "plugins": []
+      }
+    }
+  }
+}
