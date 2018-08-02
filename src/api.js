@@ -27,7 +27,7 @@ export const withTest = test => async () => {
             .then(assertBodyInclude)
             .then(assertBodypath);
     }
-};
+}
 
 const makeDbPrechanges = async spec => {
     if (spec.db && spec.db.preChange) {
@@ -121,7 +121,6 @@ const assertBodypath = test => {
 const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)[0]).to.deep.equal(bodypath.value);
 
 export const init = (apiPromise, ENV, cols, dbPath) => async function() {
-    this.timeout(10000);
     api = await apiPromise;
     await initDatabase(ENV, cols, dbPath)();
 };
