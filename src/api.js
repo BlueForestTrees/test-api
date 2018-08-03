@@ -118,7 +118,7 @@ const assertBodypath = test => {
     }
     return test;
 };
-const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)[0]).to.deep.equal(bodypath.value);
+const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)).to.deep.equal(bodypath.value);
 
 export const init = (apiPromise, ENV, cols, dbPath) => async function() {
     api = await apiPromise;
