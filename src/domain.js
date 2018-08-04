@@ -42,9 +42,9 @@ export const withQuantity = (qt, unit, c1, c2) => {
 };
 const withType = type => type ? ({type}) : ({});
 
-export const withTrunk = (name, qt, unit, type) => ({color: getRandomColor(), name, _id: new mongo.ObjectID(), name_lower: name.toLowerCase(), ...withQuantity(qt, unit), ...withType(type)})
+export const withTrunk = (name, _id, qt, unit, type) => ({color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withQuantity(qt, unit), ...withType(type)})
 
-export const withEntry = (name, grandeur) => ({color: getRandomColor(), name, _id: new mongo.ObjectID(), grandeur, name_lower: name.toLowerCase()})
+export const withEntry = (_id, name, grandeur) => ({_id:object(_id), color: getRandomColor(), name, grandeur, name_lower: name.toLowerCase()});
 export const withValidationError = (prop, location, msg, value) => ({"errorCode": 2, errors: {[prop]: {location, msg, param: prop, value}}, message: "validation error(s)"});
 export const withError = (errorCode, message) => ({errorCode, message});
 
