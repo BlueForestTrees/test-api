@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {replaceItem, withObjId, withTrunk} from "../src/domain";
-import {addObjects, createStringObjectId, object, remove, removeObjects} from "../src/util";
+import {addObjects, clon, createObjectId, createStringObjectId, object, remove, removeObjects} from "../src/util"
 import mongo from "mongodb";
 
 describe('mongo-connexion', function () {
@@ -71,7 +71,7 @@ describe('mongo-connexion', function () {
             expect(trunk)
                 .to.deep.equal({
                 color: trunk.color,
-                _id: "5a6a03c03e77667641d2d2c3",
+                _id: trunk._id,
                 name: "Gateau au chocolat",
                 name_lower: "gateau au chocolat",
                 quantity: {
@@ -85,6 +85,11 @@ describe('mongo-connexion', function () {
             expect(removeObjects({toto: {titi: {tutu: object("5a6a03c03e77667641d2d2c3")}}}))
                 .to.deep.equal({toto: {titi: {tutu: "5a6a03c03e77667641d2d2c3"}}})
         });
+
+        it('clon mongo ids', function(){
+            const id = createObjectId();
+            expect(clon(id)).to.deep.equal(id)
+        })
 
     });
 });

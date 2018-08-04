@@ -54,8 +54,8 @@ export const addInitialData = cols => async objectDB => Promise.all(_.map(cols,
 
 
 export const updateDb = async ({colname, doc}) => {
-    await col(colname).deleteOne(withObjId(doc._id));
-    await col(colname).insertOne(addObjects(doc));
+    await col(colname).deleteOne(withId(doc._id))
+    await col(colname).insertOne(doc)
 };
 
 export const assertDb = async ({list, colname, doc, missingDoc}) => {
@@ -64,12 +64,12 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
     }
     if (doc) {
         if (doc._id) {
-            const dbDoc = await loadFromDbById(colname, doc._id);
             try {
+                const dbDoc = await loadFromDbById(colname, doc._id)
                 expect(dbDoc).to.deep.equal(doc);
                 debug("assertDb OK, doc by id", dbDoc);
             } catch (e) {
-                console.log(`assertDB KO ${colname}, ${await loadFromDbById(colname, doc._id, true)?'found a doc with this id as string !':''}`);
+                console.log(`assertDB KO ${colname}`)
                 throw e;
             }
         } else {
@@ -80,7 +80,7 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
     }
     if (missingDoc) {
         if (missingDoc._id) {
-            const dbDoc = await loadFromDbById(colname, missingDoc._id, true);
+            const dbDoc = await loadFromDbById(colname, missingDoc._id)
             expect(dbDoc).to.be.null;
             debug("not in db", missingDoc);
         } else {
@@ -94,20 +94,8 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
 /**
  * @param ext s'il faut chercher avec _id en tant que string si non trouvé comme objectId
  */
-export const loadFromDbById = async (colname, _id, ext) => {
-    let res = null;
-    try{
-        res = await col(colname).findOne(withObjId(_id));
-        if(!res && ext){//_id est compatible objectID
-            res = await col(colname).findOne(withId(_id));
-        }
-    }catch(e){//_id n'est pas compatible objectID
-        if(ext) {
-            res = await col(colname).findOne(withId(_id));
-        }
-    }
-    return removeObjects(res);
-};
+export const loadFromDbById = async (colname, _id) => await col(colname).findOne(withId(_id));
+
 export const loadFromDbByDoc = async (colname, doc) => await col(colname).findOne(doc);
 
 export const countFromDbByDoc = async (colname, query) => (await col(colname).find(query).toArray()).length

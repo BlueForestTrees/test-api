@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import mongo from 'mongodb';
+import {ObjectID} from 'mongodb'
 
-export const object = id => new mongo.ObjectID(id);
+export const object = id => new ObjectID(id);
 export const createObjectId = () => object(createStringObjectId());
 export const createStringObjectId = () => (new Date().getTime() / 1000 | 0).toString(16) + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () => (Math.random() * 16 | 0).toString(16)).toLowerCase();
 
@@ -12,13 +12,15 @@ export const debug = (...obj) => {
         console.log(obj);
     }
     return Promise.resolve(...obj);
-};
-export const clon = obj => _.cloneDeep(obj);
+}
+
+export const clon = obj => _.cloneDeep(obj, val => val instanceof ObjectID ? val.toString() : val)
+
 export const remove = (obj, prop, criteria) => {
     const clone = clon(obj);
     clone[prop] = _.without(clone[prop], _.find(clone[prop], criteria));
     return clone;
-};
+}
 
 
 export const addObjects = data => {

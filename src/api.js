@@ -1,7 +1,7 @@
 import chai, {expect} from 'chai';
 import {assertDb, initDatabase, updateDb} from "./db";
 import jsonpath from 'jsonpath';
-import {debug} from "./util";
+import {debug, removeObjects} from "./util"
 import fs from 'fs';
 import {isFunction} from 'lodash';
 
@@ -91,9 +91,9 @@ const assertHeaders = test => {
 const assertBody = test => {
     if (test.res && test.res.body !== undefined) {
         if(isFunction(test.res.body)){
-            expect(test.actual.body).to.deep.equal(test.res.body());
+            expect(test.actual.body).to.deep.equal(removeObjects(test.res.body()))
         }else{
-            expect(test.actual.body).to.deep.equal(test.res.body);
+            expect(test.actual.body).to.deep.equal(removeObjects(test.res.body))
         }
     }
     return test;
@@ -118,7 +118,7 @@ const assertBodypath = test => {
     }
     return test;
 };
-const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)).to.deep.equal(bodypath.value);
+const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)).to.deep.equal(removeObjects(bodypath.value))
 
 export const init = (apiPromise, ENV, cols, dbPath) => async function() {
     api = await apiPromise;
