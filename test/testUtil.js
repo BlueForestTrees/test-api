@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {replaceItem, withObjId, withTrunk, withTrunkNoQt} from "../src/domain";
+import {replaceItem, withObjId, withTrunk} from "../src/domain";
 import {addObjects, createStringObjectId, object, remove, removeObjects} from "../src/util";
 import mongo from "mongodb";
 
@@ -66,13 +66,7 @@ describe('mongo-connexion', function () {
                 });
         });
 
-        it('withTrunkNoQt ok', function () {
-            let t = withTrunkNoQt("Eau", "999903c03e77667641d99994");
-            expect(t)
-                .to.deep.equal({color: t.color, name: "Eau", name_lower: "eau", _id: "999903c03e77667641d99994"});
-        });
-
-        const trunk = withTrunk("Gateau au chocolat", "5a6a03c03e77667641d2d2c3", 200, "g");
+        const trunk = withTrunk("Gateau au chocolat", 200, "g");
         it('withTrunk ok', function () {
             expect(trunk)
                 .to.deep.equal({
