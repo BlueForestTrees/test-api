@@ -1,4 +1,4 @@
-import {removeItemQuantity} from "../src/domain"
+import {removeItemQuantity, withQtCoef} from "../src/domain"
 import {expect} from "chai"
 import {clon, createObjectId} from "../src/util"
 
@@ -9,5 +9,13 @@ describe("domain", function () {
         const expected = {_id: item._id, items: [{_id: item.items[0]._id, quantity: 45}, {_id: item.items[1]._id}]}
 
         expect(removeItemQuantity(item, clon(item.items[1]._id))).to.deep.equal(expected)
+    })
+
+    it("gets array withQtCoef", () => {
+        expect(withQtCoef([{_id: 321, quantity: {bqt: 2, g: "Nomb"}}], 2)).to.deep.equal([{_id: 321, quantity: {bqt: 4, g: "Nomb"}}])
+    })
+
+    it("gets object withQtCoef", () => {
+        expect(withQtCoef({_id: 321, quantity: {bqt: 2, g: "Nomb"}}, 2)).to.deep.equal({_id: 321, quantity: {bqt: 4, g: "Nomb"}})
     })
 })

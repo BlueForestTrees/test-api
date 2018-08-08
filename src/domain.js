@@ -23,10 +23,17 @@ export const getRandomColor = () => {
     return color;
 };
 
-export const withQtCoef = (items, coef) => _.forEach(items, root => root.quantity.qt *= coef || 2);
+export const withQtCoef = (items, coef) => Array.isArray(items) ?
+    _.map(items, item => ({...item, ...withIdBqtG(item._id, item.quantity.bqt * coef, item.quantity.g)}))
+    :
+    {...items, ...withIdBqtG(items._id, items.quantity.bqt * coef, items.quantity.g)}
+
 export const withoutQuantity = items => _.map(items, item => _.omit(item, "quantity"));
+export const withIdBqtG = (_id, bqt, g) => ({_id, ...withBqtG(bqt, g)})
+export const withBqtG = (bqt, g) => ({quantity: {bqt, g}})
 export const withIdQuantity = (_id, qt, unit) => ({_id, ...withQuantity(qt, unit)});
 export const withIdQuantityRelativeTo = (_id, qt, unit, relativeTo) => ({...withIdQuantity(_id, qt, unit), relativeTo});
+export const withIdBqtGRelativeTo = (_id, bqt, g, relativeTo) => ({...withIdBqtG(_id, bqt, g), relativeTo})
 export const withId = _id => ({_id});
 export const withIds = items => _.map(items, item => ({_id:item._id}));
 export const withObjId = id => ({_id: object(id)});
@@ -34,7 +41,8 @@ export const withIdQtUnit = (_id, qt, unit) => ({_id, qt, unit});
 export const withQuantity = (qt, unit) => ({quantity: {qt, unit}});
 const withType = type => type ? ({type}) : ({});
 
-export const withTrunk = (name, _id, qt, unit, type) => ({color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withQuantity(qt, unit), ...withType(type)})
+export const withTrunk = (name, _id, qt, unit, type) => ({...withType(type), color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withQuantity(qt, unit)})
+export const withDbTrunk = (name, _id, bqt, g, type) => ({...withType(type), color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withBqtG(bqt, g)})
 
 export const withEntry = (_id, name, grandeur) => ({_id:object(_id), color: getRandomColor(), name, grandeur, name_lower: name.toLowerCase()});
 export const withValidationError = (prop, location, msg, value) => ({"errorCode": 2, errors: {[prop]: {location, msg, param: prop, value}}, message: "validation error(s)"});

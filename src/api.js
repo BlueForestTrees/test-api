@@ -118,6 +118,7 @@ const assertBodyInclude = test => {
 const assertBodypath = test => {
     if (test.res) {
         if (test.res.bodypath) {
+            expect(test.actual.body).to.be.not.null
             if(Array.isArray(test.res.bodypath)){
                 for(let i = 0; i < test.res.bodypath.length; i++){
                     assertOneBodypath(test, test.res.bodypath[i]);
