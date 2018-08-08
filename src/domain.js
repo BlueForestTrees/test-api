@@ -1,6 +1,5 @@
-import {createStringObjectId, object, remove} from "./util"
+import {object, remove} from "./util"
 import _ from 'lodash'
-import mongo from 'mongodb'
 
 export const setQuantity = (trunk, qt, unit) => {
     unit = unit ? unit : trunk.quantity.unit;
@@ -32,14 +31,7 @@ export const withId = _id => ({_id});
 export const withIds = items => _.map(items, item => ({_id:item._id}));
 export const withObjId = id => ({_id: object(id)});
 export const withIdQtUnit = (_id, qt, unit) => ({_id, qt, unit});
-export const withQuantity = (qt, unit, c1, c2) => {
-    const res = {quantity: {qt, unit}};
-    if (!isNaN(c1) && !isNaN(c2)) {
-        res.quantity.c1 = c1;
-        res.quantity.c2 = c2;
-    }
-    return res;
-};
+export const withQuantity = (qt, unit) => ({quantity: {qt, unit}});
 const withType = type => type ? ({type}) : ({});
 
 export const withTrunk = (name, _id, qt, unit, type) => ({color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withQuantity(qt, unit), ...withType(type)})

@@ -7,7 +7,18 @@ import {isFunction} from 'lodash';
 
 let api = null;
 
-export const request = () => chai.request(api);
+export const init = (apiPromise, ENV, cols, dbPath) => async function() {
+    api = await apiPromise;
+    await initDatabase(ENV, cols, dbPath)();
+};
+
+export const request = headers => {
+    const req = chai.request(api)
+    if (headers) {
+
+    }
+    return req
+}
 
 export const withTest = test => async () => {
     if (Array.isArray(test)) {
@@ -42,18 +53,18 @@ const makeRequest = async test => {
         const m = test.req.method || "GET";
         switch (m) {
             case "GET":
-                return {...test, actual: await secure(request().get(makeUrl(test.req)))};
+                return {...test, actual: await secure(request(test.req.headers).get(makeUrl(test.req)))}
             case "PUT":
-                return {...test, actual: await secure(request().put(makeUrl(test.req)).send(test.req.body))};
+                return {...test, actual: await secure(request(test.req.headers).put(makeUrl(test.req)).send(test.req.body))}
             case "POST":
-                let post = request().post(makeUrl(test.req))
+                let post = request(test.req.headers).post(makeUrl(test.req))
                 if(test.req.file){
                     return {...test, actual: await secure(post.attach(test.req.file.field, fs.readFileSync(test.req.file.path), test.req.file.field))};
                 }else{
                     return {...test, actual: await secure(post.send(test.req.body))};
                 }
             case "DELETE":
-                return {...test, actual: await secure(request().del(makeUrl(test.req)).send(test.req.body))};
+                return {...test, actual: await secure(request(test.req.headers).del(makeUrl(test.req)).send(test.req.body))}
         }
     } else {
         return {...test};
@@ -119,11 +130,6 @@ const assertBodypath = test => {
     return test;
 };
 const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)).to.deep.equal(removeObjects(bodypath.value))
-
-export const init = (apiPromise, ENV, cols, dbPath) => async function() {
-    api = await apiPromise;
-    await initDatabase(ENV, cols, dbPath)();
-};
 
 export const run = job => done => {
     job()
