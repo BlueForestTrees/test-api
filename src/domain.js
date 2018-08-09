@@ -5,8 +5,8 @@ export const setBqt = (item, bqt) => {
     Object.assign(item, withBqt(bqt))
     return item
 }
-export const removeItemQuantity = (item, subItemId) => ({
-    ..._.omit(item, "items"),
+export const withoutItemQuantity = (item, subItemId) => ({
+    ...item,
     items: _.map(item.items, subitem => subitem._id.equals(subItemId) ? _.omit(subitem, "quantity") : subitem)
 });
 export const replaceItem = (obj, prop, value) => {
