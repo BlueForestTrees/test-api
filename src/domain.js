@@ -1,10 +1,10 @@
 import {object, remove} from "./util"
 import _ from 'lodash'
 
-export const setQuantity = (trunk, qt, unit) => {
-    unit = unit ? unit : trunk.quantity.unit;
-    trunk.quantity = {qt, unit};
-};
+export const setBqt = (item, bqt) => {
+    Object.assign(item, withBqt(bqt))
+    return item
+}
 export const removeItemQuantity = (item, subItemId) => ({
     ..._.omit(item, "items"),
     items: _.map(item.items, subitem => subitem._id.equals(subItemId) ? _.omit(subitem, "quantity") : subitem)
@@ -30,7 +30,9 @@ export const withQtCoef = (items, coef) => Array.isArray(items) ?
 
 export const withoutQuantity = items => _.map(items, item => _.omit(item, "quantity"));
 export const withIdBqtG = (_id, bqt, g) => ({_id, ...withBqtG(bqt, g)})
+export const withIdBqt = (_id, bqt) => ({_id, ...withBqt(bqt)})
 export const withBqtG = (bqt, g) => ({quantity: {bqt, g}})
+export const withBqt = bqt => ({quantity: {bqt}})
 export const withIdQuantity = (_id, qt, unit) => ({_id, ...withQuantity(qt, unit)});
 export const withIdQuantityRelativeTo = (_id, qt, unit, relativeTo) => ({...withIdQuantity(_id, qt, unit), relativeTo});
 export const withIdBqtGRelativeTo = (_id, bqt, g, relativeTo) => ({...withIdBqtG(_id, bqt, g), relativeTo})
