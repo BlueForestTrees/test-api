@@ -43,16 +43,16 @@ export const withIdQtUnit = (_id, qt, unit) => ({_id, qt, unit});
 export const withQuantity = (qt, unit) => ({quantity: {qt, unit}});
 const withType = type => type ? ({type}) : ({});
 
-export const withTrunk = (name, _id, qt, unit, type) => ({...withType(type), color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withQuantity(qt, unit)})
-export const withDbTrunk = (name, _id, bqt, g, type) => ({...withType(type), color: getRandomColor(), name, _id: object(_id), name_lower: name.toLowerCase(), ...withBqtG(bqt, g)})
+export const withDbTrunk = (name, _id, bqt, g, type) => ({...withType(type), color: getRandomColor(), name, _id: object(_id), ...withBqtG(bqt, g)})
 
-export const withEntry = (_id, name, grandeur) => ({_id:object(_id), color: getRandomColor(), name, grandeur, name_lower: name.toLowerCase()});
+export const withEntry = (_id, name, grandeur) => ({_id:object(_id), color: getRandomColor(), name, grandeur});
 export const withValidationError = (prop, location, msg, value) => ({"errorCode": 2, errors: {[prop]: {location, msg, param: prop, value}}, message: "validation error(s)"});
 export const withError = (errorCode, message) => ({errorCode, message});
 
 export const oneResponse = {n: 1, ok: 1};
 
 export const oneModifiedResponse = {nModified: 1, ...oneResponse};
+export const noneModifiedResponse = {nModified: 0, ...oneResponse};
 
 export const oneUpsertedResponse = _id => ({
     "n": 1,
@@ -67,5 +67,3 @@ export const oneUpsertedResponse = _id => ({
 });
 
 export const ObjectIDRegex = /^[a-fA-F0-9]{24}$/;
-
-export const notInSearchMixin = ["name_lower"];

@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {replaceItem, withObjId, withTrunk} from "../src/domain";
+import {replaceItem, withObjId, withDbTrunk} from "../src/domain";
 import {addObjects, clon, createObjectId, createStringObjectId, object, remove, removeObjects} from "../src/util"
 import mongo from "mongodb";
 
@@ -66,17 +66,16 @@ describe('mongo-connexion', function () {
                 });
         });
 
-        const trunk = withTrunk("Gateau au chocolat", 200, "g");
-        it('withTrunk ok', function () {
+        const trunk = withDbTrunk("Gateau au chocolat", 200, "g");
+        it('withDbTrunk ok', function () {
             expect(trunk)
                 .to.deep.equal({
                 color: trunk.color,
                 _id: trunk._id,
                 name: "Gateau au chocolat",
-                name_lower: "gateau au chocolat",
                 quantity: {
-                    "qt": 200,
-                    "unit": "g"
+                    "bqt": 200,
+                    "g": "g"
                 }
             });
         });

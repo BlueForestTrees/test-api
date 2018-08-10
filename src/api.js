@@ -12,10 +12,14 @@ export const init = (apiPromise, ENV, cols, dbPath) => async function() {
     await initDatabase(ENV, cols, dbPath)();
 };
 
-export const request = headers => {
-    const req = chai.request(api)
-    if (headers) {
+export const request = () => chai.request(api)
 
+export const headers = (headers, req) => {
+    if (headers) {
+        const keys = Object.keys(headers)
+        for (let i = 0; i < keys.length; i++) {
+            req.set(keys[i], headers[keys[i]])
+        }
     }
     return req
 }
@@ -53,18 +57,18 @@ const makeRequest = async test => {
         const m = test.req.method || "GET";
         switch (m) {
             case "GET":
-                return {...test, actual: await secure(request(test.req.headers).get(makeUrl(test.req)))}
+                return {...test, actual: await secure(headers(test.req.headers, request().get(makeUrl(test.req))))}
             case "PUT":
-                return {...test, actual: await secure(request(test.req.headers).put(makeUrl(test.req)).send(test.req.body))}
+                return {...test, actual: await secure(headers(test.req.headers, request().put(makeUrl(test.req)).send(test.req.body)))}
             case "POST":
-                let post = request(test.req.headers).post(makeUrl(test.req))
+                let post = request().post(makeUrl(test.req))
                 if(test.req.file){
-                    return {...test, actual: await secure(post.attach(test.req.file.field, fs.readFileSync(test.req.file.path), test.req.file.field))};
+                    return {...test, actual: await secure(headers(test.req.headers, post.attach(test.req.file.field, fs.readFileSync(test.req.file.path), test.req.file.field)))}
                 }else{
-                    return {...test, actual: await secure(post.send(test.req.body))};
+                    return {...test, actual: await secure(headers(test.req.headers, post.send(test.req.body)))}
                 }
             case "DELETE":
-                return {...test, actual: await secure(request(test.req.headers).del(makeUrl(test.req)).send(test.req.body))}
+                return {...test, actual: await secure(headers(test.req.headers, request().del(makeUrl(test.req)).send(test.req.body)))}
         }
     } else {
         return {...test};
