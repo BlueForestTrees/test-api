@@ -4,45 +4,9 @@ import jsonpath from 'jsonpath';
 import {debug, removeObjects} from "./util"
 import fs from 'fs';
 import {isFunction} from 'lodash';
+import {map} from 'unit-manip'
 
 let api = null;
-
-export const init = (apiPromise, ENV, cols, dbPath) => async function() {
-    api = await apiPromise;
-    await initDatabase(ENV, cols, dbPath)();
-};
-
-export const request = () => chai.request(api)
-
-export const headers = (headers, req) => {
-    if (headers) {
-        const keys = Object.keys(headers)
-        for (let i = 0; i < keys.length; i++) {
-            req.set(keys[i], headers[keys[i]])
-        }
-    }
-    return req
-}
-
-export const withTest = test => async () => {
-    if (Array.isArray(test)) {
-        const results = [];
-        for (let i = 0; i < test.length; i++) {
-            const rez = await withTest(test[i])();
-            results.push(rez)
-        }
-        return Promise.all(results);
-    } else {
-        return makeDbPrechanges(test)
-            .then(makeRequest)
-            .then(assertHttpCode)
-            .then(assertDbChanges)
-            .then(assertHeaders)
-            .then(assertBody)
-            .then(assertBodyInclude)
-            .then(assertBodypath);
-    }
-}
 
 const makeDbPrechanges = async spec => {
     if (spec.db && spec.db.preChange) {
@@ -124,8 +88,16 @@ const assertBodypath = test => {
         if (test.res.bodypath) {
             expect(test.actual.body).to.be.not.null
             if(Array.isArray(test.res.bodypath)){
+                const errs = []
                 for(let i = 0; i < test.res.bodypath.length; i++){
-                    assertOneBodypath(test, test.res.bodypath[i]);
+                    try {
+                        assertOneBodypath(test, test.res.bodypath[i])
+                    } catch (e) {
+                        errs.push(e)
+                    }
+                }
+                if (errs.length > 0) {
+                    throw {message: "BODYPATH ERRORS \n" + map(errs, err => err.message).join("\n")}
                 }
             }else{
                 assertOneBodypath(test, test.res.bodypath);
@@ -134,12 +106,48 @@ const assertBodypath = test => {
     }
     return test;
 };
-const assertOneBodypath = (test, bodypath) => expect(jsonpath.query(test.actual.body, bodypath.path)).to.deep.equal(removeObjects(bodypath.value))
+const arrayIfNeeded = v => Array.isArray(v) ? v : [v]
+const assertOneBodypath = (test, bodypath) =>
+    expect(jsonpath.query(test.actual.body, bodypath.path))
+        .to.deep.equal(arrayIfNeeded(removeObjects(bodypath.value)), bodypath.path)
 
+const makeUrl = ({url, path, param}) => url ? url : path ? path + (param ? param : '') : "test url (url or path+param) not defined"
+
+export const init = (apiPromise, ENV, cols, dbPath) => async function () {
+    api = await apiPromise
+    await initDatabase(ENV, cols, dbPath)()
+}
 export const run = job => done => {
     job()
         .then(() => done())
         .catch(err => done(err));
 };
-
-const makeUrl = ({url, path, param}) => url ? url : path ? path + (param ? param : '') : "test url (url or path+param) not defined";
+export const request = () => chai.request(api)
+export const headers = (headers, req) => {
+    if (headers) {
+        const keys = Object.keys(headers)
+        for (let i = 0; i < keys.length; i++) {
+            req.set(keys[i], headers[keys[i]])
+        }
+    }
+    return req
+}
+export const withTest = test => async () => {
+    if (Array.isArray(test)) {
+        const results = []
+        for (let i = 0; i < test.length; i++) {
+            const rez = await withTest(test[i])()
+            results.push(rez)
+        }
+        return Promise.all(results)
+    } else {
+        return makeDbPrechanges(test)
+            .then(makeRequest)
+            .then(assertHttpCode)
+            .then(assertDbChanges)
+            .then(assertHeaders)
+            .then(assertBody)
+            .then(assertBodyInclude)
+            .then(assertBodypath)
+    }
+}

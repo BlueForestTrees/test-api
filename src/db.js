@@ -74,7 +74,7 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
             }
         } else {
             const dbDoc = await loadFromDbByDoc(colname, doc);
-            expect(dbDoc).to.be.not.null;
+            expect(dbDoc, "dbDoc by fields not found:\n" + JSON.stringify(doc, null, 2)).to.be.not.null
             debug("assertDb OK, doc by fields", dbDoc);
         }
     }
