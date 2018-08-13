@@ -64,14 +64,9 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
     }
     if (doc) {
         if (doc._id) {
-            try {
-                const dbDoc = await loadFromDbById(colname, doc._id)
-                expect(dbDoc).to.deep.equal(doc);
-                debug("assertDb OK, doc by id", dbDoc);
-            } catch (e) {
-                console.log(`assertDB KO ${colname}`)
-                throw e;
-            }
+            const dbDoc = await loadFromDbById(colname, doc._id)
+            expect(dbDoc, `DB doc KO: ${colname}`).to.deep.equal(doc)
+            console.log("assertDb OK, doc by id:", doc._id, dbDoc._id)
         } else {
             const dbDoc = await loadFromDbByDoc(colname, doc);
             expect(dbDoc, "dbDoc by fields not found:\n" + JSON.stringify(doc, null, 2)).to.be.not.null
@@ -94,9 +89,9 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
 /**
  * @param ext s'il faut chercher avec _id en tant que string si non trouvé comme objectId
  */
-export const loadFromDbById = async (colname, _id) => await col(colname).findOne(withId(_id));
+export const loadFromDbById = (colname, _id) => col(colname).findOne(withId(_id));
 
-export const loadFromDbByDoc = async (colname, doc) => await col(colname).findOne(doc);
+export const loadFromDbByDoc = (colname, doc) => col(colname).findOne(doc)
 
 export const countFromDbByDoc = async (colname, query) => (await col(colname).find(query).toArray()).length
 
@@ -104,7 +99,16 @@ export const withInfos = (colname, items) => _.map(items,
         item => Object.assign(
             item,
             _.pick(
-                _.find(db[colname], {_id:item._id}),
+                _.find(db[colname], {_id: item._id}),
                 ["name", "color"]
             )
         ));
+
+export const withImpactInfos = (colname, items) => _.map(items,
+    item => Object.assign(
+        item,
+        _.pick(
+            _.find(db[colname], {_id: item.impactId}),
+            ["name", "color", "g"]
+        )
+    ))

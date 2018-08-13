@@ -50,6 +50,9 @@ export const withValidationError = (prop, location, msg, value) => ({"errorCode"
 export const withError = (errorCode, message) => ({errorCode, message});
 
 export const oneResponse = {n: 1, ok: 1};
+export const zeroDeletionOk = {n: 0, ok: 1};
+export const oneDeletionOk = {n: 1, ok: 1};
+export const twoDeletionOk = {n: 2, ok: 1};
 
 export const oneModifiedResponse = {nModified: 1, ...oneResponse};
 export const noneModifiedResponse = {nModified: 0, ...oneResponse};
