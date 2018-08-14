@@ -76,7 +76,7 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
     if (missingDoc) {
         if (missingDoc._id) {
             const dbDoc = await loadFromDbById(colname, missingDoc._id)
-            expect(dbDoc).to.be.null;
+            expect(dbDoc, "missingDoc KO").to.be.null;
             debug("not in db", missingDoc);
         } else {
             const dbDoc = await loadFromDbByDoc(colname, missingDoc);
