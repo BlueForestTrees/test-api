@@ -964,6 +964,10 @@ formidable@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.2.1.tgz#70fb7ca0290ee6ff961090415f4b3df3d2082659"
 
+fraction.js@4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.0.4.tgz#04e567110718adf7b52974a10434ab4c67a5183e"
+
 fs-minipass@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/fs-minipass/-/fs-minipass-1.2.5.tgz#06c277218454ec288df77ada54a03b8702aacb9d"
@@ -1857,6 +1861,12 @@ underscore@1.1.x:
 underscore@1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.7.0.tgz#6bbaf0877500d36be34ecaa584e0db9fef035209"
+
+unit-manip@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/unit-manip/-/unit-manip-1.0.3.tgz#1b26d165127a6b9caa945c5f386fba8394a7d7c3"
+  dependencies:
+    fraction.js "4.0.4"
 
 user-home@^1.1.1:
   version "1.1.1"
