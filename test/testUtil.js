@@ -65,21 +65,7 @@ describe('mongo-connexion', function () {
                     items: [{i: 1}, {i: 3}, {_id: 2, newVal: 5}]
                 });
         });
-
-        const trunk = withDbTrunk("Gateau au chocolat", 200, "g");
-        it('withDbTrunk ok', function () {
-            expect(trunk)
-                .to.deep.equal({
-                color: trunk.color,
-                _id: trunk._id,
-                name: "Gateau au chocolat",
-                quantity: {
-                    "bqt": 200,
-                    "g": "g"
-                }
-            });
-        });
-
+        
         it('remove objects', function(){
             expect(removeObjects({toto: {titi: {tutu: object("5a6a03c03e77667641d2d2c3")}}}))
                 .to.deep.equal({toto: {titi: {tutu: "5a6a03c03e77667641d2d2c3"}}})
