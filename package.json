@@ -21,7 +21,7 @@
     "jsonpath": "1.0.0",
     "lodash": "4.17.10",
     "mongo-connexion": "1.1.1",
-    "unit-manip": "1.0.3"
+    "unit-manip": "1.0.4"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
