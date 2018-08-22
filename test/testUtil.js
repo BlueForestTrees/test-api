@@ -9,7 +9,7 @@ describe('mongo-connexion', function () {
 
         it('doit bien gérer les object id', function(){
             let id = createStringObjectId();
-            expect(withObjId(id)._id instanceof(mongo.ObjectID)).to.equal(true);
+            expect(withObjId(id)._id instanceof(mongodb.ObjectID)).to.equal(true);
             expect(withObjId(id)._id.toString()).to.equal(id);
         });
 
@@ -29,16 +29,12 @@ describe('mongo-connexion', function () {
         it('add ObjectID', function () {
 
             const docs = [{_id: "5a6a03c03e77667641d2d2c0"}];
-            const expected = [{_id: new mongo.ObjectID("5a6a03c03e77667641d2d2c0")}];
+            const expected = [{_id: new mongodb.ObjectID("5a6a03c03e77667641d2d2c0")}];
 
             addObjects(docs);
 
             expect(docs).to.deep.equal(expected);
         });
-        // it('add ObjectID 2', function () {
-        //     expect(_.find(initialDB[cols.TRUNK],{name:"Bière Heineken"})._id).to.deep.equal(new mongo.ObjectID("6a6a03c03e77667641d2d2c3"));
-        // });
-
 
         it('remove ok', function () {
             expect(remove(
