@@ -3,8 +3,7 @@ import {assertDb, initDatabase, updateDb} from "./db";
 import jsonpath from 'jsonpath';
 import {debug, removeObjects} from "./util"
 import fs from 'fs';
-import {isFunction} from 'lodash';
-import {map} from 'unit-manip'
+import {map, isFunction} from 'lodash';
 
 let api = null;
 
