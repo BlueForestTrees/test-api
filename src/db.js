@@ -3,17 +3,38 @@ import read from 'fs-readdir-recursive';
 import path from 'path';
 import chai, {expect} from 'chai';
 import chaiHttp from 'chai-http';
-import {col, dbConnect} from "mongo-connexion";
-import {addObjects, clon, removeObjects, debug} from "./util";
-import {withId, withObjId} from "./domain";
+import {addObjects, clon} from "./util";
+import {withId} from "./domain";
+import _mongodb from 'mongodb'
+
+const debug = require('debug')('api:test-api-express-mongo')
 
 chai.use(chaiHttp);
 chai.should();
 
-let db = null;
+////////////////copied from mongo-registry
+let database = null
+const auth = ENV => (ENV.DB_USER && ENV.DB_PWD) ? (ENV.DB_USER + ":" + ENV.DB_PWD + "@") : ""
+const dbConnect = (ENV) => Promise
+    .resolve(`mongodb://${auth(ENV)}${ENV.DB_HOST}:${ENV.DB_PORT}/${ENV.DB_NAME}?authSource=admin`)
+    .then(url => {
+        debug(`CONNECTING TO %o`, url)
+        return _mongodb.MongoClient.connect(url, {useNewUrlParser: true})
+    })
+    .then(client => {
+        debug("CONNECTED")
+        database = client.db(ENV.DB_NAME)
+    })
+export const col = collectionName => database.collection(collectionName)
+///////////////////////////////////////////////////
+
+
+
+
+
 
 export const initDatabase = (ENV, cols, dbPath) => () => {
-    console.log("initDatabase for tests");
+    debug("initDatabase for tests");
     return dbConnect(ENV)
         .then(purgeDatabase(cols))
         .then(buildDatabase(path.resolve(dbPath || "test/database"), cols))
@@ -21,12 +42,13 @@ export const initDatabase = (ENV, cols, dbPath) => () => {
 };
 
 export const purgeDatabase = cols => () => Promise.all(_.map(cols, colname => {
-    console.log("Suppression : " + colname);
+    debug("Suppression : " + colname);
     return col(colname).deleteMany();
 }));
 
+let db = null;
 const buildDatabase = (dbFolder, cols) => () => {
-    console.log("Construction depuis " + dbFolder);
+    debug("Construction depuis " + dbFolder);
     db = _.fromPairs(_.map(cols, colName => [colName, []]));
     read(dbFolder)
         .forEach(function (file) {
@@ -47,8 +69,8 @@ export const addInitialData = cols => async objectDB => Promise.all(_.map(cols,
     async (colname) => {
         let datas = objectDB[colname];
         if (datas && datas.length > 0) {
-            console.log(`Insertion : ${colname} (${datas.length} documents)`);
-            return await col(colname).insert(datas);
+            debug(`Insertion : ${colname} (${datas.length} documents)`);
+            return await col(colname).insertMany(datas);
         }
     }));
 
@@ -66,7 +88,7 @@ export const assertDb = async ({list, colname, doc, missingDoc}) => {
         if (doc._id) {
             const dbDoc = await loadFromDbById(colname, doc._id)
             expect(dbDoc, `DB doc KO: ${colname}`).to.deep.equal(doc)
-            console.log("assertDb OK, doc by id:", doc._id, dbDoc._id)
+            debug("assertDb OK, doc by id:", doc._id, dbDoc._id)
         } else {
             const dbDoc = await loadFromDbByDoc(colname, doc);
             expect(dbDoc, "dbDoc by fields not found:\n" + JSON.stringify(doc, null, 2)).to.be.not.null
