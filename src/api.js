@@ -1,16 +1,17 @@
 import chai, {expect} from 'chai';
 import {assertDb, initDatabase, updateDb} from "./db";
 import jsonpath from 'jsonpath';
-import {debug, removeObjects} from "./util"
+import {removeObjects} from "./util"
 import fs from 'fs';
 import {map, isFunction} from 'lodash';
+const debug = require('debug')('test:api')
 
 let api = null;
 
 const makeDbPrechanges = async spec => {
     if (spec.db && spec.db.preChange) {
         await updateDb(spec.db.preChange);
-        debug("db prechange:", spec.db.preChange);
+        debug("db prechange %o", spec.db.preChange);
     }
     return spec;
 };

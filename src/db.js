@@ -7,7 +7,7 @@ import {addObjects, clon} from "./util";
 import {withId} from "./domain";
 import _mongodb from 'mongodb'
 
-const debug = require('debug')('api:test-api-express-mongo')
+const debug = require('debug')('test:db')
 
 chai.use(chaiHttp);
 chai.should();
