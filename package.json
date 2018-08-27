@@ -1,6 +1,6 @@
 {
   "name": "test-api",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Définir des tests d'api de manière déclarative",
   "main": "dist/index.js",
   "files": [
