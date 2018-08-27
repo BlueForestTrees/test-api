@@ -37,6 +37,7 @@ export const initDatabase = (ENV, cols, dbPath) => () => {
     debug("initDatabase for tests");
     return dbConnect(ENV)
         .then(purgeDatabase(cols))
+        .then(()=>debug("Purge Ok, construction"))
         .then(buildDatabase(path.resolve(dbPath || "test/database"), cols))
         .then(addInitialData(cols));
 };
@@ -62,7 +63,9 @@ const buildDatabase = (dbFolder, cols) => () => {
             }
         });
 
-    return _.fromPairs(_.map(db, (value, key) => ([key, addObjects(clon(value))])))
+    let objectDB = _.fromPairs(_.map(db, (value, key) => ([key, addObjects(clon(value))])))
+
+    return objectDB
 };
 
 export const addInitialData = cols => async objectDB => Promise.all(_.map(cols,
