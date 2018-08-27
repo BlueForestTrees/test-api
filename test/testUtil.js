@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {replaceItem, withObjId} from "../src/domain"
-import {addObjects, clon, createObjectId, createStringObjectId, object, remove, removeObjects} from "../src/util"
+import {addObjects, clon, createObjectId, createStringObjectId, object, remove, removeObjects} from "../src"
 import mongodb from "mongodb"
 
 describe('util', function () {

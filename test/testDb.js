@@ -1,4 +1,4 @@
-import {col, initDatabase} from "../src/db"
+import {initDatabase, col} from "../src"
 import ENV from "./env"
 import cols from "./cols"
 import {expect} from 'chai'

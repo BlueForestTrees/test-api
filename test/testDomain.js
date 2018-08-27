@@ -1,6 +1,6 @@
-import {withoutItemQuantity, withQtCoef} from "../src/domain"
 import {expect} from "chai"
-import {clon, createObjectId} from "../src/util"
+import {clon, createObjectId} from "../src"
+import {withoutItemQuantity, withQtCoef} from "../src"
 
 describe("domain", function () {
     it("remove item quantity", () => {
