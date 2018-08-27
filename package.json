@@ -1,5 +1,5 @@
 {
-  "name": "@slimane.medini/test-api",
+  "name": "test-api-express-mongo",
   "version": "1.0.12",
   "description": "Définir des tests d'api de manière déclarative",
   "main": "dist/index.js",
