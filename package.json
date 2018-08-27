@@ -1,5 +1,5 @@
 {
-  "name": "test-api",
+  "name": "@slimane.medini/test-api",
   "version": "1.0.11",
   "description": "Définir des tests d'api de manière déclarative",
   "main": "dist/index.js",
