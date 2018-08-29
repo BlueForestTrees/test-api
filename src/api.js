@@ -113,6 +113,8 @@ const assertOneBodypath = (test, bodypath) =>
 
 const makeUrl = ({url, path, param}) => url ? url : path ? path + (param ? param : '') : "test url (url or path+param) not defined"
 
+export const initApi = async apiPromise => api = await apiPromise
+
 export const init = (apiPromise, ENV, cols, dbPath) => async function () {
     api = await apiPromise
     await initDatabase(ENV, cols, dbPath)()
