@@ -4,10 +4,6 @@ import jsonpath from 'jsonpath'
 import {expect} from 'chai'
 
 export const runBodypath = (doc, bodypath) => {
-
-    console.log(doc)
-    console.log(bodypath)
-
     if (Array.isArray(bodypath)) {
         const errs = []
         for (let i = 0; i < bodypath.length; i++) {
