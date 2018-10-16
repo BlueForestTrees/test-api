@@ -1,24 +1,25 @@
-import chai, {expect} from 'chai';
-import {assertDb, initDatabase, updateDb} from "./db";
-import jsonpath from 'jsonpath';
+import chai, {expect} from 'chai'
+import {assertDb, initDatabase, updateDb} from "./db"
 import {removeObjects} from "./util"
-import fs from 'fs';
-import {map, isFunction} from 'lodash';
+import fs from 'fs'
+import {map, isFunction} from 'lodash'
+import {runBodypath} from "./bodypath"
+
 const debug = require('debug')('test:api')
 
-let api = null;
+let api = null
 
 const makeDbPrechanges = async spec => {
     if (spec.db && spec.db.preChange) {
-        await updateDb(spec.db.preChange);
-        debug("db prechange %o", spec.db.preChange);
+        await updateDb(spec.db.preChange)
+        debug("db prechange %o", spec.db.preChange)
     }
-    return spec;
-};
-const secure = req => req.catch(res => res.response);
+    return spec
+}
+const secure = req => req.catch(res => res.response)
 const makeRequest = async test => {
     if (test.req) {
-        const m = test.req.method || "GET";
+        const m = test.req.method || "GET"
         switch (m) {
             case "GET":
                 return {...test, actual: await secure(headers(test.req.headers, request().get(makeUrl(test.req))))}
@@ -26,94 +27,76 @@ const makeRequest = async test => {
                 return {...test, actual: await secure(headers(test.req.headers, request().put(makeUrl(test.req)).send(test.req.body)))}
             case "POST":
                 let post = request().post(makeUrl(test.req))
-                if(test.req.file){
+                if (test.req.file) {
                     return {...test, actual: await secure(headers(test.req.headers, post.attach(test.req.file.field, fs.readFileSync(test.req.file.path), test.req.file.field)))}
-                }else{
+                } else {
                     return {...test, actual: await secure(headers(test.req.headers, post.send(test.req.body)))}
                 }
             case "DELETE":
                 return {...test, actual: await secure(headers(test.req.headers, request().del(makeUrl(test.req)).send(test.req.body)))}
         }
     } else {
-        return {...test};
+        return {...test}
     }
-};
+}
 const assertHttpCode = test => {
     if (test.actual) {
-        expect(test.actual.res.statusCode).to.equal(test.res && test.res.code || 200);
+        expect(test.actual.res.statusCode).to.equal(test.res && test.res.code || 200)
     }
-    return test;
-};
+    return test
+}
 const assertDbChanges = async test => {
     if (test.db && test.db.expected)
-        await assertDb(test.db.expected);
-    return test;
-};
+        await assertDb(test.db.expected)
+    return test
+}
 const assertHeaders = test => {
 
     if (test.res && test.res.headers) {
         for (let i = 0; i < test.res.headers.length; i++) {
-            const header = test.res.headers[i];
+            const header = test.res.headers[i]
             if (header.key) {
-                const expectedValue = header.value;
+                const expectedValue = header.value
                 if (expectedValue !== undefined) {
-                    expect(test.actual.headers[header.key]).to.equal(expectedValue);
+                    expect(test.actual.headers[header.key]).to.equal(expectedValue)
                 } else {
-                    expect(test.actual.headers[header.key]).to.be.not.null;
+                    expect(test.actual.headers[header.key]).to.be.not.null
                 }
             }
         }
     }
 
-    return test;
-};
+    return test
+}
 const assertBody = test => {
     if (test.res && test.res.body !== undefined) {
-        if(isFunction(test.res.body)){
+        if (isFunction(test.res.body)) {
             expect(test.actual.body).to.deep.equal(removeObjects(test.res.body()))
-        }else{
+        } else {
             expect(test.actual.body).to.deep.equal(removeObjects(test.res.body))
         }
     }
-    return test;
-};
+    return test
+}
 const assertBodyInclude = test => {
     if (test.res && test.res.bodyInclude !== undefined) {
-        expect(test.actual.body).to.deep.include(test.res.bodyInclude);
+        expect(test.actual.body).to.deep.include(test.res.bodyInclude)
     }
-    return test;
-};
+    return test
+}
 const assertBodypath = test => {
     if (test.res) {
         if (test.res.bodypath) {
             expect(test.actual.body).to.be.not.null
-            if(Array.isArray(test.res.bodypath)){
-                const errs = []
-                for(let i = 0; i < test.res.bodypath.length; i++){
-                    try {
-                        assertOneBodypath(test, test.res.bodypath[i])
-                    } catch (e) {
-                        errs.push(e)
-                    }
-                }
-                if (errs.length > 0) {
-                    throw {message: "BODYPATH ERRORS \n" + map(errs, err => err.message).join("\n")}
-                }
-            }else{
-                assertOneBodypath(test, test.res.bodypath);
-            }
+            runBodypath(test.actual.body, test.res.bodypath)
         }
     }
-    return test;
-};
-const arrayIfNeeded = v => Array.isArray(v) ? v : [v]
-const assertOneBodypath = (test, bodypath) =>
-    expect(jsonpath.query(test.actual.body, bodypath.path))
-        .to.deep.equal(arrayIfNeeded(removeObjects(bodypath.value)), bodypath.path)
+    return test
+}
 
 const makeUrl = ({url, path, param}) => url ? url : path ? path + (param ? param : '') : "test url (url or path+param) not defined"
 
-export const initApi = apiPromise => async() => api = await apiPromise
+export const initApi = apiPromise => async () => api = await apiPromise
 
 export const init = (apiPromise, ENV, cols, dbPath) => async function () {
     api = await apiPromise
@@ -122,8 +105,8 @@ export const init = (apiPromise, ENV, cols, dbPath) => async function () {
 export const run = job => done => {
     job()
         .then(() => done())
-        .catch(err => done(err));
-};
+        .catch(err => done(err))
+}
 export const request = () => chai.request(api)
 export const headers = (headers, req) => {
     if (headers) {
