@@ -1,6 +1,6 @@
 {
   "name": "test-api-express-mongo",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Définir des tests d'api de manière déclarative",
   "main": "dist/index.js",
   "files": [
