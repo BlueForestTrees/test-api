@@ -50,7 +50,7 @@ const assertDbChanges = async test => {
         await assertDb(test.db.expected)
     return test
 }
-const assertHeaders = test => {
+const assertHttpHeaders = test => {
 
     if (test.res && test.res.headers) {
         for (let i = 0; i < test.res.headers.length; i++) {
@@ -67,6 +67,11 @@ const assertHeaders = test => {
     }
 
     return test
+}
+const assertHttpBody = test => {
+    assertBody(test)
+    assertBodyInclude(test)
+    assertBodypath(test)
 }
 const assertBody = test => {
     if (test.res && test.res.body !== undefined) {
@@ -126,13 +131,26 @@ export const withTest = test => async () => {
         }
         return Promise.all(results)
     } else {
-        return makeDbPrechanges(test)
+        const testResult = await makeDbPrechanges(test)
             .then(makeRequest)
-            .then(assertHttpCode)
-            .then(assertDbChanges)
-            .then(assertHeaders)
-            .then(assertBody)
-            .then(assertBodyInclude)
-            .then(assertBodypath)
+
+        let exs = []
+        try {
+            await assertHttpCode(testResult)
+            await assertHttpHeaders(testResult)
+            await assertHttpBody(testResult)
+        } catch (e) {
+            exs.push(e)
+        }
+        try {
+            await assertDbChanges(testResult)
+        } catch (e) {
+            exs.push(e)
+        }
+        if (exs.length > 1) {
+            throw exs
+        } else if (exs.length) {
+            throw exs[0]
+        }
     }
 }
