@@ -46,7 +46,7 @@ const withType = type => type ? ({type}) : ({});
 export const withDbTrunk = (name, _id, bqt, g, type) => ({...withType(type), color: getRandomColor(), name, _id: object(_id), ...withBqtG(bqt, g)})
 
 export const withEntry = (_id, name, g) => ({_id:object(_id), color: getRandomColor(), name, g});
-export const withValidationError = (prop, location, msg, value) => ({"errorCode": 2, errors: {[prop]: {location, msg, param: prop, value}}, message: "validation error(s)"});
+export const withValidationError = (prop, location, msg, value) => ({"errorCode": 2, errors: {[prop]: {location, msg, param: prop, value}}, message: "Demande erronée"});
 export const withError = (errorCode, message) => ({errorCode, message});
 
 export const oneResponse = {n: 1, ok: 1};
