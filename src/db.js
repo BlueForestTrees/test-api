@@ -74,10 +74,20 @@ export const addInitialData = cols => async objectDB => Promise.all(_.map(cols,
         }
     }))
 
-
-export const updateDb = async ({colname, doc}) => {
+const applyUpdateDb = async (colname, doc) => {
     await col(colname).deleteOne(withId(doc._id))
     await col(colname).insertOne(doc)
+}
+export const updateDb = async ({colname, doc, docs}) => {
+    if (doc) {
+        await applyUpdateDb(colname, doc)
+    } else if (docs) {
+        for (let i = 0; i < docs.length; i++) {
+            await applyUpdateDb(colname, docs[i])
+        }
+    } else {
+        console.warn("neither doc nor docs in preChange!?")
+    }
 }
 
 export const assertDb = async ({list, colname, doc, missingDoc}) => {

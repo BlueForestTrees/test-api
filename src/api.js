@@ -9,13 +9,23 @@ const debug = require('debug')('test:api')
 
 let api = null
 
+const applyPrechange = async preChange => {
+    debug("applying db prechange %o", preChange)
+    await updateDb(preChange)
+}
+
 const makeDbPrechanges = async spec => {
     if (spec.db && spec.db.preChange) {
-        await updateDb(spec.db.preChange)
-        debug("db prechange %o", spec.db.preChange)
+        await applyPrechange(spec.db.preChange)
+    }
+    if (spec.db && spec.db.preChanges) {
+        for (let i = 0; i < spec.db.preChanges; i++) {
+            await applyPrechange(spec.db.preChanges[i])
+        }
     }
     return spec
 }
+
 const secure = req => req.catch(res => res.response)
 const makeRequest = async test => {
     if (test.req) {
